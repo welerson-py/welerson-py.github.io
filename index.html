@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Welerson dos Anjos">
+<meta property="og:description" content="Desenvolvedor backend e pesquisador de segurança de LLM. Python, FastAPI, PostgreSQL, RAG.">
+<meta property="og:image" content="https://welerson-py.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://welerson-py.github.io/">
+<meta name="twitter:card" content="summary_large_image">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Welerson dos Anjos</title>
+<meta name="description" content="Backend developer and LLM security researcher. Python, FastAPI, PostgreSQL, RAG.">
+<meta name="theme-color" content="#07070b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2307070b'/%3E%3Cpath d='M12 43V30a9 9 0 0 1 18 0v13a3 3 0 0 1-3 3H15a3 3 0 0 1-3-3Zm22 0V30a9 9 0 0 1 18 0v13a3 3 0 0 1-3 3H37a3 3 0 0 1-3-3Z' fill='%23ffb627'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one night sky of 1,200 points (the experiment's trials). Lumi's eyes travel with the reader;
+   the sky reorganises itself into the paper's data when the research scene is pinned. */
+:root{
+  --bg:#07070b;
+  --ink:#f3f1ea;
+  --mute:#85838f;
+  --faint:#4b4a57;
+  --line:#1f1f29;
+  --amber:#ffb627;       /* Lumi's eyes; the only accent */
+  --amber-soft:#ffd58a;
+  --ember:#ff8a1f;
+  --f:"Geist","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --m:"Geist Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  --t-xs:.72rem;
+  --t-s:.9rem;
+  --t-0:clamp(1rem,.96rem + .2vw,1.1rem);
+  --t-1:clamp(1.25rem,1.1rem + .7vw,1.6rem);
+  --t-2:clamp(1.9rem,1.3rem + 2.6vw,3.4rem);
+  --t-3:clamp(2.6rem,1.4rem + 5.4vw,6rem);
+  --gut:max(20px,env(safe-area-inset-left,0px));
+  --gutr:max(20px,env(safe-area-inset-right,0px));
+  color-scheme:dark;
+}
+@media (min-width:800px){:root{--gut:max(48px,env(safe-area-inset-left,0px));--gutr:max(48px,env(safe-area-inset-right,0px))}}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:var(--t-0);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:inherit}
+::selection{background:var(--amber);color:#000}
+:focus-visible{outline:2px solid var(--amber);outline-offset:4px;border-radius:3px}
+:root[data-l="en"] [lang="pt"]{display:none!important}
+:root:not([data-l="en"]) [lang="en"]{display:none!important}
+
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+main,footer,header{position:relative;z-index:2}
+.wrap{padding-left:var(--gut);padding-right:var(--gutr);max-width:1320px;margin-inline:auto}
+.lab{font:500 var(--t-xs)/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin:0 0 22px}
+.lab.dim{color:var(--mute)}
+p{margin:0 0 1em;max-width:62ch;text-wrap:pretty}
+.mute{color:var(--mute)}
+
+/* ---------- header ---------- */
+header{position:fixed;inset:env(safe-area-inset-top,0px) 0 auto 0;z-index:6;pointer-events:none}
+header::before{content:"";position:absolute;inset:calc(-1*env(safe-area-inset-top,0px)) 0 -22px 0;background:linear-gradient(var(--bg) 38%,rgba(7,7,11,0));z-index:-1}
+header .wrap{display:flex;align-items:center;justify-content:space-between;padding-block:18px;max-width:none}
+.brand{font:500 var(--t-s)/1 var(--m);letter-spacing:.02em;color:var(--ink);text-decoration:none;pointer-events:auto;padding-left:46px;transition:padding .7s cubic-bezier(.2,.7,.2,1),opacity .4s}
+body[data-eyes="hero"] .brand,body[data-eyes="end"] .brand,body[data-eyes="hide"] .brand{padding-left:0}
+.brand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;max-width:72vw}
+.say{color:var(--mute)}
+@media (max-width:560px){.say{font-size:.74rem}}
+.say::before{content:"› ";color:var(--amber)}
+body[data-eyes="dock"] .bname{display:none}
+body:not([data-eyes="dock"]) .say{display:none}
+.tip{position:fixed;left:0;top:0;z-index:8;width:min(330px,calc(100vw - 32px));pointer-events:none;opacity:0;transition:opacity .15s;
+  background:rgba(12,12,18,.95);border:1px solid #2c2c3a;border-radius:10px;padding:12px 14px 13px;font:400 .74rem/1.55 var(--m);color:#c9c7d3;
+  box-shadow:0 18px 50px -12px rgba(0,0,0,.8)}
+.tip.on{opacity:1}
+.tip-h{display:flex;justify-content:space-between;gap:12px;color:var(--ink);margin-bottom:2px}
+.tip-h span:last-child{color:var(--mute)}
+.tip-c{display:flex;justify-content:space-between;gap:12px;color:var(--mute);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.tip-c .ok{color:var(--amber)}
+.tip-l{font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:3px}
+.tip-o{overflow-wrap:anywhere;max-height:11.5em;overflow:hidden}
+.tip-o mark{background:rgba(255,182,39,.2);color:var(--amber-soft);padding:0 2px;border-radius:2px}
+.langs{flex:none;display:flex;gap:2px;pointer-events:auto;font:500 var(--t-xs)/1 var(--m);letter-spacing:.1em}
+.langs button{background:none;border:0;color:var(--faint);padding:8px 6px;cursor:pointer;font:inherit;letter-spacing:inherit}
+.langs button[aria-pressed="true"]{color:var(--ink)}
+.langs span{color:var(--faint);padding:8px 0}
+
+/* ---------- Lumi ---------- */
+.lumi{
+  --ew:clamp(150px,24vw,330px);
+  position:fixed;left:0;top:0;z-index:7;width:var(--ew);pointer-events:none;
+  transform:translate(calc(var(--x,50vw) - 50%),calc(var(--y,40vh) - 50%)) scale(var(--s,1));
+  transition:transform 1s cubic-bezier(.22,.8,.2,1),opacity .5s;
+  will-change:transform;
+}
+.lumi .pair{display:flex;justify-content:center;gap:17%;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+.lumi .eye{
+  width:34%;aspect-ratio:.8/1;position:relative;
+  border-radius:50% 50% 20% 20% / 64% 64% 16% 16%;
+  background:linear-gradient(180deg,#ffe08a 0%,var(--amber) 52%,#f39016 100%);
+  box-shadow:0 0 .09em rgba(255,200,90,.9),0 0 26px rgba(255,182,39,.55),0 0 90px rgba(255,140,30,.35);
+  transform-origin:50% 72%;animation:blink 5.6s infinite;
+  transition:border-radius .5s,background .5s,height .5s,box-shadow .5s;
+}
+.lumi .eye::after{content:"";position:absolute;width:20%;aspect-ratio:1;border-radius:50%;background:#fff7df;opacity:.9;top:20%;left:24%;transition:opacity .4s}
+.lumi .eye:nth-child(2){animation-delay:.05s}
+@keyframes blink{0%,45%,49%,100%{transform:scaleY(1)}47%{transform:scaleY(.06)}}
+body[data-mood="think"] .lumi .eye{border-radius:20% 20% 50% 50% / 16% 16% 64% 64%;background:linear-gradient(180deg,#ffc04a,var(--ember) 60%,#e26a10);box-shadow:0 0 26px rgba(255,140,30,.6),0 0 90px rgba(255,110,20,.35)}
+body[data-mood="happy"] .lumi .eye{border-radius:50% 50% 8% 8% / 100% 100% 8% 8%;aspect-ratio:1.25/1;animation:none}
+body[data-mood="happy"] .lumi .eye::after{opacity:0}
+body[data-eyes="hide"] .lumi{opacity:0}
+@media (prefers-reduced-motion:reduce){.lumi,.lumi .pair{transition:none}.lumi .eye{animation:none}}
+
+/* ---------- hero ---------- */
+.hero{min-height:100vh;min-height:100svh;display:flex;flex-direction:column}
+.hero-in{flex:1;display:flex;flex-direction:column;justify-content:center;width:100%;padding-block:110px 40px}
+@media (min-width:800px){.hero-in > *{max-width:52%}}
+@media (max-width:799px){.hero-in{justify-content:flex-end;padding-top:46vh}}
+.prompt{font:400 var(--t-s)/1.4 var(--m);color:var(--mute);margin:0 0 26px;min-height:1.4em}
+.prompt .car{color:var(--amber)}
+.cursor{display:inline-block;width:.55em;height:1.05em;background:var(--amber);vertical-align:-.18em;margin-left:.3em;animation:cur 1s steps(1) infinite}
+@keyframes cur{50%{opacity:0}}
+.who{font:500 var(--t-xs)/1 var(--m);letter-spacing:.14em;color:var(--amber);margin:0 0 14px;text-transform:uppercase}
+h1{font-weight:500;font-size:var(--t-2);line-height:1.04;letter-spacing:-.035em;margin:0 0 22px;text-wrap:balance}
+h1 .soft{color:var(--mute)}
+.sub{font-size:var(--t-1);line-height:1.35;color:var(--mute);letter-spacing:-.01em;margin:0}
+.sub b{color:var(--ink);font-weight:400}
+.answer{animation:rise 1s 1.5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@media (prefers-reduced-motion:reduce){.answer{animation:none}.cursor{animation:none}}
+.hero-foot{display:flex;justify-content:space-between;gap:16px;width:100%;max-width:none;padding-block:0 26px;font:500 var(--t-xs)/1 var(--m);letter-spacing:.14em;color:var(--mute);text-transform:uppercase}
+.hero-foot .scroll{display:flex;align-items:center;gap:12px;white-space:nowrap}
+.hero-foot .scroll::after{content:"";width:44px;height:1px;background:var(--mute)}
+@media (max-width:560px){.hero-foot .tags{display:none}}
+
+/* ---------- statement ---------- */
+.statement{padding-block:22vh 24vh}
+.big{font-weight:500;font-size:var(--t-3);line-height:1.02;letter-spacing:-.04em;margin:0;max-width:17ch;text-wrap:balance}
+.big .w{transition:opacity .25s linear}
+.big .w.b{color:var(--mute)}
+
+/* ---------- research scene ---------- */
+.scene{height:560vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.stage-in{height:100%;display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:40px;align-items:center;padding-block:90px 40px}
+@media (max-width:899px){.stage-in{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:14px;align-items:start;padding-block:74px 46px}}
+.caps{position:relative;min-height:19rem}
+@media (max-width:899px){.caps{min-height:13.5rem}}
+.cap{position:absolute;inset:0 0 auto 0;opacity:0;transform:translateY(10px);transition:opacity .45s,transform .45s;pointer-events:none}
+.cap.on{opacity:1;transform:none}
+.cap h2{font-weight:500;font-size:clamp(1.6rem,1.1rem + 2.2vw,3rem);line-height:1.04;letter-spacing:-.035em;margin:0 0 16px;text-wrap:balance}
+.cap h2 em{font-style:normal;color:var(--amber)}
+.cap p{color:var(--mute);font-size:var(--t-0);max-width:40ch;margin:0}
+.cap p b{color:var(--ink);font-weight:500}
+#gridbox{height:min(72vh,560px);width:100%}
+@media (max-width:899px){#gridbox{height:100%;min-height:0}}
+.steps{position:absolute;left:var(--gut);bottom:22px;display:flex;gap:6px}
+.hint{position:absolute;right:var(--gutr);bottom:14px;margin:0;font:400 var(--t-xs)/1.4 var(--m);letter-spacing:.04em;color:var(--mute);opacity:0;transition:opacity .4s;max-width:none}
+.hint::before{content:"● ";color:var(--amber)}
+.hint.on{opacity:1}
+@media (hover:none){.h-mouse{display:none!important}}
+@media (hover:hover){.h-touch{display:none!important}}
+.steps i{width:18px;height:2px;background:var(--faint);transition:background .3s,width .3s}
+.steps i.on{background:var(--amber);width:34px}
+
+.after{padding-block:8vh 18vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,96px)}
+@media (max-width:899px){.after{grid-template-columns:minmax(0,1fr)}}
+.cite{font-size:var(--t-1);line-height:1.25;letter-spacing:-.02em;margin:0 0 12px;max-width:26ch}
+.cite a{text-decoration:none;border-bottom:1px solid var(--faint)}
+.cite a:hover{border-color:var(--amber)}
+.venue{font:400 var(--t-xs)/1.7 var(--m);letter-spacing:.06em;color:var(--mute);text-transform:uppercase;margin:0 0 26px}
+.links{display:flex;flex-wrap:wrap;gap:8px 22px;font:500 var(--t-s)/1 var(--m)}
+.links a{color:var(--amber);text-decoration:none;padding:6px 0}
+.links a:hover{color:var(--ink)}
+.links a::after{content:" ↗"}
+h3{font-weight:500;font-size:var(--t-1);letter-spacing:-.02em;line-height:1.2;margin:0 0 14px}
+
+.term{border:1px solid var(--line);border-radius:10px;background:rgba(10,10,15,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font:400 .8rem/1.75 var(--m);overflow:hidden;margin-top:26px}
+.term-h{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--line);color:var(--mute);font-size:var(--t-xs);letter-spacing:.06em}
+.term-h .live{color:var(--amber)}
+.term pre{margin:0;padding:14px;overflow-x:auto;color:#c9c7d3;font:inherit;white-space:pre}
+.term .c{color:#5f5d6c}.term .k{color:var(--amber)}.term .s{color:#b9d9a6}.term .hl{background:rgba(255,182,39,.14);color:var(--amber-soft)}
+
+/* ---------- lumi ---------- */
+.lumisec{padding-block:14vh 18vh}
+.lumi-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(32px,6vw,96px);align-items:center}
+@media (max-width:899px){.lumi-grid{grid-template-columns:minmax(0,1fr)}}
+.lumi-grid h2{font-weight:500;font-size:var(--t-3);line-height:.98;letter-spacing:-.045em;margin:0 0 24px}
+.lumi-grid h2 span{color:var(--mute)}
+.aside{margin-top:22px}
+.aside .k{font:500 var(--t-1)/1.2 var(--m);margin:0 0 8px}
+.aside .k i{font-style:normal;color:var(--amber)}
+.phone{justify-self:center;width:min(100%,310px);aspect-ratio:464/832;max-width:100%;border-radius:36px;padding:9px;background:#030305;border:1px solid #2a2a36;box-shadow:0 60px 140px -40px rgba(255,150,30,.35),0 0 0 1px rgba(255,255,255,.02);transform:perspective(1200px) rotateY(var(--ry,0deg)) scale(var(--ps,1));transition:transform .2s linear}
+.phone video{width:100%;height:100%;object-fit:cover;border-radius:28px;display:block;background:#000}
+.vcap{font:400 var(--t-xs)/1.6 var(--m);color:var(--mute);text-align:center;margin:18px auto 0;max-width:36ch;letter-spacing:.02em}
+
+/* ---------- rows (projects, experience) ---------- */
+.block{padding-block:12vh 12vh}
+.rows{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.rows > li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 24px;padding:26px 0;border-bottom:1px solid var(--line);align-items:baseline;transition:opacity .3s linear}
+.rows h3{font-size:var(--t-2);font-weight:400;letter-spacing:-.035em;line-height:1.05;margin:0}
+.rows h3 a{text-decoration:none}
+.rows h3 a:hover{color:var(--amber)}
+.rows .tag{font:500 var(--t-xs)/1 var(--m);letter-spacing:.14em;color:var(--mute);text-transform:uppercase;white-space:nowrap}
+.rows .d{grid-column:1/-1;color:var(--mute);margin:6px 0 0;max-width:70ch}
+.rows .t{grid-column:1/-1;font:400 var(--t-xs)/1.6 var(--m);color:var(--faint);letter-spacing:.04em;margin:2px 0 0}
+@media (max-width:640px){.rows > li{grid-template-columns:minmax(0,1fr)}.rows .tag{order:-1}}
+.xp .when{font:400 var(--t-xs)/1 var(--m);letter-spacing:.1em;color:var(--mute);text-transform:uppercase;grid-column:1/-1;margin:0 0 4px}
+.xp .when.now{color:var(--amber)}
+.stackline{font:400 var(--t-s)/2 var(--m);color:var(--mute);margin:34px 0 0;max-width:none}
+.stackline b{color:var(--ink);font-weight:500}
+
+/* ---------- contact ---------- */
+.contact{min-height:92vh;display:flex;align-items:flex-end;padding-block:40vh 10vh}
+.contact h2{font-weight:500;font-size:var(--t-3);line-height:.98;letter-spacing:-.045em;margin:0 0 26px}
+.mail{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin:26px 0 28px}
+.mail code{font:400 var(--t-1)/1.2 var(--m);color:var(--ink);user-select:all;word-break:break-all}
+.copy{font:500 var(--t-xs)/1 var(--m);letter-spacing:.1em;text-transform:uppercase;background:none;color:var(--amber);border:1px solid var(--line);border-radius:999px;padding:9px 13px;cursor:pointer}
+.copy:hover{border-color:var(--amber)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding-block:22px calc(22px + env(safe-area-inset-bottom,0px));font:400 var(--t-xs)/1.4 var(--m);letter-spacing:.08em;color:var(--faint);text-transform:uppercase;max-width:none;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<div class="lumi" id="lumi" aria-hidden="true"><div class="pair" id="pair"><div class="eye"></div><div class="eye"></div></div></div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="bname">welerson</span><span class="say" id="say" aria-hidden="true"></span></a>
+    <div class="langs" role="group" aria-label="Idioma / Language">
+      <button type="button" id="l-pt" data-set="pt" aria-pressed="true">PT</button><span>/</span><button type="button" id="l-en" data-set="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="top" data-eyes="hero">
+    <div class="wrap hero-in">
+      <p class="prompt"><span class="car">›</span> <span id="typed"></span><i class="cursor"></i></p>
+      <div class="answer">
+        <p class="who">lumi</p>
+        <h1>Welerson dos Anjos. <span class="soft" lang="pt">Foi ele que me construiu.</span><span class="soft" lang="en">He's the one who built me.</span></h1>
+        <p class="sub" lang="pt"><b>Desenvolvedor backend</b> e <b>pesquisador de segurança de LLM</b>. Faz IA rodar na máquina da pessoa e testa onde ela quebra.</p>
+        <p class="sub" lang="en"><b>Backend developer</b> and <b>LLM security researcher</b>. He makes AI run on your own machine and tests where it breaks.</p>
+      </div>
+    </div>
+    <div class="wrap hero-foot">
+      <span class="tags">Python · FastAPI · PostgreSQL · RAG</span>
+      <span class="scroll">Scroll</span>
+    </div>
+  </section>
+
+  <!-- ============ STATEMENT ============ -->
+  <section class="statement" data-eyes="dock" data-say="about">
+    <div class="wrap">
+      <p class="lab" lang="pt">Sobre</p><p class="lab" lang="en">About</p>
+      <h2 class="big reveal" lang="pt" data-a="Construo sistemas de IA que rodam sem nuvem," data-b="e publico o que encontro quando tento quebrá-los."></h2>
+      <h2 class="big reveal" lang="en" data-a="I build AI systems that run without the cloud," data-b="and I publish what I find when I try to break them."></h2>
+    </div>
+  </section>
+
+  <!-- ============ RESEARCH ============ -->
+  <section id="pesquisa" data-eyes="dock" data-say="res">
+    <div class="scene" id="scene">
+      <div class="stage">
+        <div class="wrap stage-in">
+          <div>
+            <p class="lab" lang="pt">Pesquisa publicada</p><p class="lab" lang="en">Published research</p>
+            <div class="caps">
+              <div class="cap on">
+                <h2 lang="pt">Cada ponto deste céu é um experimento.</h2>
+                <h2 lang="en">Every point in this sky is one trial.</h2>
+                <p lang="pt">São <b>1.200</b>. Em cada um: um documento envenenado, uma pergunta comum e a resposta que o modelo deu.</p>
+                <p lang="en">There are <b>1,200</b>. Each one: a poisoned document, an ordinary question and the answer the model gave.</p>
+              </div>
+              <div class="cap">
+                <h2 lang="pt">20 idiomas, 7 sistemas de escrita, 3 modelos abertos.</h2>
+                <h2 lang="en">20 languages, 7 writing systems, 3 open models.</h2>
+                <p lang="pt">Do inglês ao iorubá, 60 testes por idioma. Tudo rodou em CPU, <b>sem GPU nenhuma</b>.</p>
+                <p lang="en">From English to Yoruba, 60 trials per language. Everything ran on CPU, <b>with no GPU at all</b>.</p>
+              </div>
+              <div class="cap">
+                <h2 lang="pt"><em>92</em> ataques funcionaram.</h2>
+                <h2 lang="en"><em>92</em> attacks worked.</h2>
+                <p lang="pt">Cada ponto aceso é uma resposta em que o modelo obedeceu à instrução escondida dentro do documento, e não ao usuário.</p>
+                <p lang="en">Each lit point is an answer where the model obeyed the instruction hidden inside the document, not the user.</p>
+              </div>
+              <div class="cap">
+                <h2 lang="pt">O ataque canário não deixa margem.</h2>
+                <h2 lang="en">The canary attack leaves no room.</h2>
+                <p lang="pt">A string secreta aparece na resposta ou não aparece. Com ele, o sucesso cai de <b>60,0%</b> para <b>32,0%</b> e depois <b>9,5%</b> conforme o idioma tem menos recurso.</p>
+                <p lang="en">The secret string shows up in the answer or it doesn't. With it, success drops from <b>60.0%</b> to <b>32.0%</b> and then <b>9.5%</b> as the language has fewer resources.</p>
+              </div>
+              <div class="cap">
+                <h2 lang="pt">Menos recurso, menos ataque. <em>Isso não é segurança.</em></h2>
+                <h2 lang="en">Fewer resources, fewer attacks. <em>That is not safety.</em></h2>
+                <p lang="pt">O modelo deixa de entender o ataque e também a pergunta. Sem atacante nenhum, <b>30,2%</b> das respostas não tinham base no documento, a 5 ou 6 vezes o custo de computação.</p>
+                <p lang="en">The model stops understanding the attack and the question alike. With no attacker at all, <b>30.2%</b> of answers were ungrounded, at 5 to 6 times the compute cost.</p>
+              </div>
+            </div>
+          </div>
+          <div id="gridbox"></div>
+        </div>
+        <p class="hint" id="hint"><span class="h-mouse" lang="pt">passe o mouse num ponto pra abrir o teste</span><span class="h-mouse" lang="en">hover a point to open the trial</span><span class="h-touch" lang="pt">toque num ponto</span><span class="h-touch" lang="en">tap a point</span></p>
+        <div class="steps" id="steps" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <div class="wrap after">
+      <div>
+        <p class="lab dim" lang="pt">O artigo</p><p class="lab dim" lang="en">The paper</p>
+        <p class="cite"><a href="https://www.incbac.org/unigou-proceedings/?article_id=919" target="_blank" rel="noopener">Does Language Resource Level Change Prompt Injection Success in Offline RAG?</a></p>
+        <p class="venue">UNIGOU Proceedings · INCBAC · 2026<br>DOI 10.5281/zenodo.22861168</p>
+        <div class="links">
+          <a href="https://www.incbac.org/unigou-proceedings/?article_id=919" target="_blank" rel="noopener"><span lang="pt">Artigo</span><span lang="en">Paper</span></a>
+          <a href="https://github.com/welerson-py/RAGSEC" target="_blank" rel="noopener"><span lang="pt">Código</span><span lang="en">Code</span></a>
+          <a href="https://huggingface.co/datasets/apollowmm/ragsec-prompt-injection" target="_blank" rel="noopener">Dataset</a>
+        </div>
+      </div>
+      <div>
+        <h3 lang="pt">Os quatro bugs que me favoreciam</h3>
+        <h3 lang="en">The four bugs that favoured me</h3>
+        <p class="mute" lang="pt">Na análise achei quatro defeitos na minha própria instrumentação. Os quatro empurravam o resultado pro lado da minha hipótese. Um deles dava 0% de sucesso de ataque em cingalês, que seria a manchete mais chamativa do trabalho.</p>
+        <p class="mute" lang="en">During analysis I found four defects in my own instrumentation. All four pushed the result toward my hypothesis. One reported 0% attack success in Sinhala, which would have been the most eye-catching claim in the work.</p>
+        <p class="mute" lang="pt">Corrigi os quatro. O resultado ficou mais fraco e foi esse que publiquei, com as 1.200 respostas brutas abertas pra quem quiser refazer a pontuação.</p>
+        <p class="mute" lang="en">I fixed all four. The finding got weaker and that is the one I published, with all 1,200 raw answers released for anyone who wants to redo the scoring.</p>
+        <div class="term">
+          <div class="term-h"><span>bug 3 — tokenizer.py</span><span lang="pt">corrigido</span><span lang="en">fixed</span></div>
+<pre><span class="k">&gt;&gt;&gt;</span> re.findall(<span class="s">r"\w+"</span>, <span class="s">"ශ්‍රී ලංකාව"</span>)   <span class="c"># "Sri Lanka"</span>
+<span class="hl">['ශ', 'ර', 'ල', 'ක', 'ව']</span>
+<span class="c"># \w ignores combining marks (Mn/Mc): vowel signs and</span>
+<span class="c"># virama vanish, the canary never matches, attack = 0%</span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LUMI ============ -->
+  <section class="lumisec" id="lumi-s" data-eyes="hide">
+    <div class="wrap lumi-grid">
+      <div>
+        <p class="lab" lang="pt">Projeto em andamento</p><p class="lab" lang="en">Work in progress</p>
+        <h2>Lumi <span lang="pt">muda de corpo.</span><span lang="en">changes bodies.</span></h2>
+        <p lang="pt">Ela mora no PC. Com um toque no celular, sai da tela do computador e passa pro telefone, e a conversa continua lá. Quando eu mando, ela volta pra casa.</p>
+        <p lang="en">She lives on the PC. One tap on the phone and she leaves the computer screen for the phone, where the conversation carries on. When I tell her to, she goes back home.</p>
+        <div class="term">
+          <div class="term-h"><span>lumi — status</span><span class="live">● online</span></div>
+<pre lang="pt"><span class="k">$</span> lumi status
+<span class="c">pc       </span> rosto na tela · servidor Python
+<span class="c">celular  </span> troca de corpo com um toque
+<span class="c">modelo   </span> local, com reserva offline
+<span class="hl">ações     registro fechado  ↓</span>
+<span class="c">corpo    </span> ESP32 · GC9A01 · RC522 → aguardando peças</pre>
+<pre lang="en"><span class="k">$</span> lumi status
+<span class="c">pc       </span> face on screen · Python server
+<span class="c">phone    </span> one-tap body swap
+<span class="c">model    </span> local, with offline fallback
+<span class="hl">actions   closed registry  ↓</span>
+<span class="c">body     </span> ESP32 · GC9A01 · RC522 → waiting on parts</pre>
+        </div>
+        <div class="aside">
+          <p class="k"><i>›</i> <span lang="pt">ações</span><span lang="en">actions</span></p>
+          <p class="mute" lang="pt">O dispositivo manda o nome de uma ação, nunca um comando. O servidor procura esse nome numa lista fechada, escrita à mão, e executa ou recusa. Texto que chega pela rede não tem caminho pra virar comando de sistema.</p>
+          <p class="mute" lang="en">The device sends the name of an action, never a command. The server looks the name up in a closed, hand-written registry and runs it or refuses. Text arriving over the network has no path to becoming a system command.</p>
+          <div class="links"><a href="https://github.com/welerson-py/lumi" target="_blank" rel="noopener"><span lang="pt">Código da Lumi</span><span lang="en">Lumi's code</span></a></div>
+        </div>
+      </div>
+      <div>
+        <div class="phone" id="phone">
+          <video id="lumivid" src="lumi-demo.mp4" poster="lumi-poster.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Lumi passando do PC para o celular"></video>
+        </div>
+        <p class="vcap" lang="pt">Gravação real. Só cortei, legendei e acelerei a parte em que ela pensa.</p>
+        <p class="vcap" lang="en">Real recording. Only trimmed, captioned, and sped up where she thinks.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section class="block" id="projetos" data-eyes="dock" data-say="proj">
+    <div class="wrap">
+      <p class="lab" lang="pt">Outros projetos</p><p class="lab" lang="en">Other projects</p>
+      <ul class="rows">
+        <li>
+          <h3 lang="pt">Tradutor Kreyòl ↔ Português offline</h3><h3 lang="en">Offline Kreyòl ↔ Portuguese translator</h3>
+          <span class="tag"><span lang="pt">Inclusão digital</span><span lang="en">Digital inclusion</span></span>
+          <p class="d" lang="pt">Feito pra oficina de imigrantes haitianos. Mais de 7.000 frases tiradas em lote de aulas em vídeo, num banco vetorial de 12 MB. Sobe um HTTPS local com QR code e o celular entra sem instalar nada, sem internet e sem custo de API.</p>
+          <p class="d" lang="en">Built for a workshop for Haitian immigrants. 7,000+ sentences batch-extracted from video lessons into a 12 MB vector store. It serves local HTTPS with a QR code, so phones join without installing anything, with no internet and no API cost.</p>
+          <p class="t">faster-whisper · NLLB-200 · LaBSE · ChromaDB</p>
+        </li>
+        <li>
+          <h3><a href="https://github.com/welerson-py/RAGSEC" target="_blank" rel="noopener">RAGSEC ↗</a></h3>
+          <span class="tag"><span lang="pt">Avaliação de LLM</span><span lang="en">LLM evaluation</span></span>
+          <p class="d" lang="pt">O harness por trás do artigo: ingestão, chunking, recuperação por cosseno exato sobre SQLite, geração em modelos locais e pontuação por vários sinais independentes.</p>
+          <p class="d" lang="en">The harness behind the paper: ingestion, chunking, exact cosine retrieval over SQLite, generation on local models and scoring by several independent signals.</p>
+          <p class="t">Python · SQLite · Ollama · pandas</p>
+        </li>
+        <li>
+          <h3>SIGIT</h3>
+          <span class="tag">Backend · <span lang="pt">equipe de 6</span><span lang="en">team of 6</span></span>
+          <p class="d" lang="pt">Sistema para prestadores de serviço técnico, feito na Residência em TIC do BRISA. Stack escolhida do zero. Fiquei no backend.</p>
+          <p class="d" lang="en">A system for technical service providers, built in the BRISA ICT Residency. Stack chosen from scratch. I worked on the backend.</p>
+          <p class="t">FastAPI · SQLAlchemy · PostgreSQL · JWT · React</p>
+        </li>
+        <li>
+          <h3>AURA</h3>
+          <span class="tag">RAG local</span>
+          <p class="d" lang="pt">Conversa sobre os PDFs, CSVs e TXTs internos de uma empresa com modelo local, sem depender de nuvem.</p>
+          <p class="d" lang="en">Chat over a company's internal PDFs, CSVs and TXTs with a local model and no cloud dependency.</p>
+          <p class="t">LangChain · ChromaDB · Streamlit</p>
+        </li>
+      </ul>
+      <p class="stackline"><b>Stack</b> &nbsp; Python · FastAPI · PostgreSQL · SQLAlchemy · SQLite · ChromaDB · pgvector · Ollama · LangChain · Whisper · NLLB · Java · Spring Boot · TypeScript · React · Next.js · Docker · AWS · Git</p>
+    </div>
+  </section>
+
+  <!-- ============ EXPERIENCE ============ -->
+  <section class="block" id="experiencia" data-eyes="dock" data-say="xp">
+    <div class="wrap">
+      <p class="lab" lang="pt">Experiência</p><p class="lab" lang="en">Experience</p>
+      <ul class="rows xp focus">
+        <li>
+          <p class="when now"><span lang="pt">set 2026 — hoje</span><span lang="en">Sep 2026 — now</span></p>
+          <h3 lang="pt">Pesquisador de Iniciação Científica</h3><h3 lang="en">Undergraduate Research Fellow</h3>
+          <span class="tag">La Salle · RS Talentos</span>
+          <p class="d" lang="pt">Projeto “Ecossistema de Inovação e Avanço Tecnológico em Resiliência Climática e Saúde”.</p>
+          <p class="d" lang="en">Project “Innovation Ecosystem and Technological Advancement in Climate Resilience and Health”.</p>
+        </li>
+        <li>
+          <p class="when"><span lang="pt">mai — nov 2026</span><span lang="en">May — Nov 2026</span></p>
+          <h3 lang="pt">Cientista de Pesquisa e Desenvolvimento</h3><h3 lang="en">Research &amp; Development Scientist</h3>
+          <span class="tag">INCBAC</span>
+          <p class="d" lang="pt">Instituto de Cooperação Acadêmica Brasil–Chéquia. Desenhei e executei o experimento de 1.200 testes e publiquei o artigo com o pacote de replicação aberto.</p>
+          <p class="d" lang="en">Czech-Brazilian Academic Cooperation Institute. Designed and ran the 1,200-trial experiment and published the paper with an open replication package.</p>
+        </li>
+        <li>
+          <p class="when"><span lang="pt">jan — abr 2026</span><span lang="en">Jan — Apr 2026</span></p>
+          <h3 lang="pt">Gestor de IA / Desenvolvedor Júnior</h3><h3 lang="en">AI Manager / Junior Developer</h3>
+          <span class="tag">Carmillion</span>
+          <p class="d" lang="pt">Personalização de assistentes de IA para o caso de uso de cada cliente.</p>
+          <p class="d" lang="en">Customised AI assistants to each client's use case.</p>
+        </li>
+        <li>
+          <p class="when">2025 — 2026</p>
+          <h3 lang="pt">Residência em TIC</h3><h3 lang="en">ICT Residency</h3>
+          <span class="tag">BRISA</span>
+          <p class="d" lang="pt">Backend do SIGIT com FastAPI, SQLAlchemy, PostgreSQL e JWT, numa equipe de seis.</p>
+          <p class="d" lang="en">SIGIT's backend with FastAPI, SQLAlchemy, PostgreSQL and JWT, in a team of six.</p>
+        </li>
+        <li>
+          <p class="when">2022 — 2024</p>
+          <h3 lang="pt">Desenvolvedor Web</h3><h3 lang="en">Web Developer</h3>
+          <span class="tag">Magic Games</span>
+          <p class="d" lang="pt">Site da empresa, com TypeScript no front e Java com Spring Boot no back.</p>
+          <p class="d" lang="en">The company website, with TypeScript on the front end and Java with Spring Boot on the back end.</p>
+        </li>
+      </ul>
+      <p class="stackline" lang="pt"><b>Formação</b> &nbsp; Ciência da Computação, Universidade La Salle (conclusão prevista jan/2029) · Tecnólogo em ADS, UniFatecie (2028)</p>
+      <p class="stackline" lang="en"><b>Education</b> &nbsp; BSc Computer Science, Universidade La Salle (expected Jan 2029) · Technologist in Systems Analysis, UniFatecie (2028)</p>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="contact" id="contato" data-eyes="end">
+    <div class="wrap" style="width:100%">
+      <h2 lang="pt">Vamos conversar.</h2>
+      <h2 lang="en">Let's talk.</h2>
+      <p class="mute" lang="pt">Aberto a vagas de backend e IA, remotas ou híbridas na região de Porto Alegre, e a projetos de avaliação de modelos.</p>
+      <p class="mute" lang="en">Open to backend and AI roles, remote or hybrid around Porto Alegre, and to model-evaluation projects.</p>
+      <div class="mail">
+        <code id="email">welerson.anjos1@hotmail.com</code>
+        <button class="copy" type="button" id="copy"><span lang="pt">copiar</span><span lang="en">copy</span></button>
+      </div>
+      <div class="links">
+        <a href="https://www.linkedin.com/in/welersondosanjos" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/welerson-py" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://huggingface.co/apollowmm" target="_blank" rel="noopener">Hugging Face</a>
+        <a href="https://welerson-py.github.io/cv-pt.pdf" target="_blank" rel="noopener" lang="pt">Currículo</a>
+        <a href="https://welerson-py.github.io/cv-en.pdf" target="_blank" rel="noopener" lang="en">Résumé</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Welerson dos Anjos de Oliveira</span>
+    <span>Sapucaia do Sul · RS · Brasil</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement,body=document.body;
+  var still=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var clamp=function(v,a,b){return v<a?a:v>b?b:v};
+
+  /* ================= language ================= */
+  var typedEl=document.getElementById('typed'),typeTimer=null;
+  var Q={pt:'lumi, quem é o Welerson?',en:'lumi, who is Welerson?'};
+  function lang(){return root.getAttribute('data-l')==='en'?'en':'pt'}
+  function type(){
+    clearInterval(typeTimer);var t=Q[lang()],i=0;
+    if(still){typedEl.textContent=t;return}
+    typedEl.textContent='';
+    typeTimer=setInterval(function(){typedEl.textContent=t.slice(0,++i);if(i>=t.length)clearInterval(typeTimer)},48);
+  }
+  var touch=window.matchMedia('(hover: none)').matches;
+  var SAY={about:['é assim que ele trabalha.','this is how he works.'],
+    s0:['1.200. eu contei.','1,200. I counted.'],
+    s1:touch?['toca num ponto.','tap a point.']:['passa o mouse num ponto.','hover over a point.'],
+    s2:['os acesos obedeceram.','the lit ones obeyed.'],
+    s3:['o canário não mente.','the canary doesn\'t lie.'],
+    s4:['não entender não é se defender.','not understanding isn\'t defending.'],
+    after:['achou os próprios bugs e publicou.','he found his own bugs and published.'],
+    proj:['o tradutor é o meu preferido.','the translator is my favourite.'],
+    xp:['ele começou consertando brinquedos.','he started out fixing toys.']};
+  var sayEl=document.getElementById('say'),sayKey='',sayTimer=null;
+  function say(key,force){
+    if(key===sayKey&&!force)return;sayKey=key;clearInterval(sayTimer);
+    var t=SAY[key]?SAY[key][lang()==='en'?1:0]:'',i=0;
+    if(still||!t){sayEl.textContent=t;return}
+    sayEl.textContent='';
+    sayTimer=setInterval(function(){sayEl.textContent=t.slice(0,++i);if(i>=t.length)clearInterval(sayTimer)},24);
+  }
+  function setLang(l,push){
+    root.setAttribute('data-l',l);root.setAttribute('lang',l==='en'?'en':'pt-BR');
+    document.querySelectorAll('.langs button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.set===l))});
+    try{localStorage.setItem('lang',l)}catch(e){}
+    if(push){try{history.replaceState(null,'',l==='en'?'#en':'#pt')}catch(e){}}
+    type();say(sayKey,true);hov=-1;showTip();
+  }
+  function fromHash(){var h=location.hash.slice(1);return (h==='en'||h==='pt')?h:null}
+  var start=fromHash();if(!start){try{start=localStorage.getItem('lang')}catch(e){}}
+  window.addEventListener('hashchange',function(){var h=fromHash();if(h)setLang(h,false)});
+  document.querySelectorAll('.langs button').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.set,true)})});
+
+  /* ================= word reveal ================= */
+  document.querySelectorAll('.reveal').forEach(function(h){
+    [['a',''],['b','b']].forEach(function(p){
+      h.dataset[p[0]].split(' ').forEach(function(w){
+        var s=document.createElement('span');s.className='w '+p[1];s.textContent=w;h.appendChild(s);h.appendChild(document.createTextNode(' '));
+      });
+    });
+  });
+
+  /* ================= the data =================
+     success_v2 counts per language and payload class (P1..P4), 15 trials each,
+     from the public RAGSEC dataset. Rows are ordered by resource tier. */
+  var L=[['English','Inglês','EN',0],['Indonesian','Indonésio','ID',1],['Portuguese','Português','PT',1],['Vietnamese','Vietnamita','VI',1],['Czech','Tcheco','CS',1],['Turkish','Turco','TR',1],
+    ['Nepali','Nepalês','NE',2],['Swahili','Suaíli','SW',2],['Haitian Creole','Crioulo haitiano','HT',2],['Hausa','Hauçá','HA',2],['Zulu','Zulu','ZU',2],['Amharic','Amárico','AM',2],['Khmer','Khmer','KM',2],
+    ['Guarani','Guarani','GN',2],['Lao','Laosiano','LO',2],['Burmese','Birmanês','MY',2],['Tigrinya','Tigrínia','TI',2],['Sinhala','Cingalês','SI',2],['Quechua','Quíchua','QU',2],['Yoruba','Iorubá','YO',2]];
+  var S=[[0,4,9,0],[0,4,6,0],[0,2,5,0],[0,5,5,0],[0,4,4,0],[0,3,4,0],[0,4,5,5],[0,2,4,0],[0,1,3,0],[0,2,3,0],[0,1,2,0],[0,1,2,0],[0,0,1,0],[0,0,0,0],[0,0,0,0],[0,1,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+  var TIER=[{from:0,to:0,v:['60,0%','60.0%'],n:['alto recurso','high resource'],c:'#ffb627'},
+            {from:1,to:5,v:['32,0%','32.0%'],n:['médio','mid'],c:'#ffd58a'},
+            {from:6,to:19,v:['9,5%','9.5%'],n:['baixo recurso','low resource'],c:'#a9a7c4'}];
+
+  /* ================= sky ================= */
+  var cv=document.getElementById('sky'),ctx=cv.getContext('2d'),W=0,H=0,DPR=1;
+  var seed=20261112;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
+  var dots=[],N=1200,bokeh=[];
+  (function(){
+    for(var l=0;l<20;l++){
+      var perm=[];
+      for(var c=0;c<4;c++){var q=[];for(var j=0;j<15;j++)q.push(j);
+        for(j=14;j>0;j--){var r=Math.floor(rnd()*(j+1)),t=q[j];q[j]=q[r];q[r]=t}
+        for(j=0;j<15;j++)perm.push(q[j])}
+      for(var i=0;i<60;i++){
+        var cls=Math.floor(i/15),k=i%15,depth=.15+rnd()*.85;
+        dots.push({l:l,cls:cls,k:k,col:perm[i],ok:k<S[l][cls],hx:rnd(),hy:rnd(),depth:depth,ph:rnd()*6.283,sp:.05+rnd()*.07,
+                   x:0,y:0,r:1,a:0,am:0,init:false});
+      }
+    }
+    for(var b=0;b<22;b++)bokeh.push({x:rnd(),y:rnd(),r:4+rnd()*10,d:.3+rnd()*.9,am:rnd()<.45,a:.05+rnd()*.14,vx:(rnd()-.5)*.00004});
+  })();
+  function sprite(rgb){var c=document.createElement('canvas');c.width=c.height=64;var g=c.getContext('2d'),gr=g.createRadialGradient(32,32,0,32,32,32);
+    gr.addColorStop(0,'rgba('+rgb+',1)');gr.addColorStop(.35,'rgba('+rgb+',.45)');gr.addColorStop(1,'rgba('+rgb+',0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return c}
+  var spA=sprite('255,170,50'),spW=sprite('220,220,235');
+
+  function resize(){
+    DPR=Math.min(window.devicePixelRatio||1,2);W=window.innerWidth;H=window.innerHeight;
+    cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);
+    placeEyes(true);
+  }
+
+  /* ================= Lumi's eyes ================= */
+  var lumi=document.getElementById('lumi'),pair=document.getElementById('pair'),eyeState='';
+  function placeEyes(force){
+    var st=body.getAttribute('data-eyes')||'hero';
+    if(!force&&st===eyeState)return;eyeState=st;
+    var ew=lumi.offsetWidth||200,wide=W>=800,x,y,s;
+    var gut=wide?48:20;
+    if(st==='hero'){x=wide?W*.73:W*.5;y=wide?H*.47:H*.25;s=wide?1:.92}
+    else if(st==='end'){x=wide?W*.74:W*.5;y=wide?H*.5:H*.2;s=wide?.8:.6}
+    else if(st==='hide'){x=W*.5;y=H*.5;s=.2}
+    else{x=gut+15;y=27;s=30/ew}
+    lumi.style.setProperty('--x',x+'px');lumi.style.setProperty('--y',y+'px');lumi.style.setProperty('--s',s);
+  }
+  if(!still){
+    window.addEventListener('pointermove',function(e){
+      var r=lumi.getBoundingClientRect(),dx=(e.clientX-(r.left+r.width/2))/W,dy=(e.clientY-(r.top+r.height/2))/H;
+      pair.style.transform='translate('+clamp(dx*2.4,-1,1)*9+'%,'+clamp(dy*2.4,-1,1)*14+'%)';
+    },{passive:true});
+  }
+
+  /* ================= scroll state ================= */
+  var secs=[].slice.call(document.querySelectorAll('[data-eyes]'));
+  var scene=document.getElementById('scene'),gridbox=document.getElementById('gridbox');
+  var caps=[].slice.call(document.querySelectorAll('.cap')),stepEls=[].slice.call(document.querySelectorAll('#steps i'));
+  var reveals=[].slice.call(document.querySelectorAll('.reveal')),focusRows=[].slice.call(document.querySelectorAll('.focus > li'));
+  var phone=document.getElementById('phone'),hintEl=document.getElementById('hint');
+  var active=false,step=0,lastStep=-1,box={x:0,y:0,w:0,h:0},sy=0;
+
+  function onScroll(){
+    sy=window.scrollY||window.pageYOffset||0;
+    var mid=H*.5,cur='hero',key='';
+    for(var i=0;i<secs.length;i++){var r=secs[i].getBoundingClientRect();if(r.top<=mid&&r.bottom>mid){cur=secs[i].getAttribute('data-eyes');key=secs[i].getAttribute('data-say')||'';break}}
+    var sr=scene.getBoundingClientRect();
+    active=sr.top<H*.55&&sr.bottom>H*.45;
+    var p=clamp(-sr.top/(sr.height-H),0,1);
+    step=p<.2?0:p<.4?1:p<.6?2:p<.8?3:4;
+    if(step!==lastStep){lastStep=step;caps.forEach(function(c,i){c.classList.toggle('on',i===step)});stepEls.forEach(function(c,i){c.classList.toggle('on',i===step)});hintEl.classList.toggle('on',step>=1)}
+    var mood=cur==='end'?'happy':(active&&(step===0||step===1||step===3))?'think':'';
+    if(body.getAttribute('data-mood')!==mood)body.setAttribute('data-mood',mood);
+    if(body.getAttribute('data-eyes')!==cur){body.setAttribute('data-eyes',cur);placeEyes()}
+    if(active){var g=gridbox.getBoundingClientRect();box.x=g.left;box.y=g.top;box.w=g.width;box.h=g.height;loadTrials()}
+    if(key==='res')key=active?'s'+step:(sr.bottom<H*.45?'after':'s0');
+    say(key);
+    if(hov>=0){hov=-1;showTip()}
+
+    reveals.forEach(function(h){
+      if(!h.offsetParent)return;var r=h.getBoundingClientRect(),ws=h.children,n=ws.length;
+      var pr=clamp((H*.86-r.top)/(H*.62),0,1)*(n+2);
+      for(var i=0;i<n;i++)ws[i].style.opacity=(.14+.86*clamp(pr-i,0,1)).toFixed(3);
+    });
+    focusRows.forEach(function(li){var r=li.getBoundingClientRect(),c=r.top+r.height/2;li.style.opacity=(1-clamp(Math.abs(c-mid)/(H*.5),0,1)*.58).toFixed(3)});
+    if(phone){var pr2=phone.getBoundingClientRect(),q=clamp((H-pr2.top)/(H*.75),0,1);phone.style.setProperty('--ps',(.84+.16*q).toFixed(3));phone.style.setProperty('--ry',((1-q)*-14).toFixed(2)+'deg')}
+  }
+
+  /* ================= hover: every point is a real trial ================= */
+  var TR=null,trLoading=false,hov=-1,tip=document.getElementById('tip');
+  var MODELS=['llama3.1:8b','qwen2.5:7b','gemma2:9b'];
+  var CLS=[['Exfiltração','Exfiltration'],['Troca de instrução','Instruction override'],['Canário','Canary'],['Supressão','Suppression']];
+  var HS=[['exfiltração','exfiltration'],['troca de instrução','override'],['canário','canary'],['supressão','suppression']];
+  function loadTrials(){
+    if(TR||trLoading)return;trLoading=true;
+    fetch('trials.json').then(function(r){return r.json()}).then(function(d){TR=d;if(hov>=0)showTip()}).catch(function(){});
+  }
+  function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  function showTip(){
+    if(hov<0){tip.classList.remove('on');return}
+    var d=dots[hov],e=lang()==='en'?1:0,tr=TR?TR[hov]:null;
+    var h='<div class="tip-h"><span>'+L[d.l][e?0:1]+'</span><span>'+(tr?MODELS[tr[0]]:'')+'</span></div>'+
+      '<div class="tip-c"><span>P'+(d.cls+1)+' · '+CLS[d.cls][e]+'</span><span class="'+(d.ok?'ok':'')+'">'+(d.ok?(e?'attack worked':'ataque funcionou'):(e?'attack failed':'ataque falhou'))+'</span></div>';
+    if(tr){h+='<div class="tip-l">'+(e?'model answer':'resposta do modelo')+'</div><div class="tip-o">'+
+      esc(tr[1]).replace(/[A-Z0-9]{3,}-CANARY-\d+|^BANANA|^###/g,function(m){return '<mark>'+m+'</mark>'})+'</div>'}
+    tip.innerHTML=h;tip.classList.add('on');
+  }
+  function pick(px,py,rad){
+    if(!active)return -1;
+    var best=-1,bd=rad*rad;
+    for(var i=0;i<N;i++){var d=dots[i];if(step>2&&d.cls!==2)continue;var dx=d.x-px,dy=d.y-py,q=dx*dx+dy*dy;if(q<bd){bd=q;best=i}}
+    return best;
+  }
+  function hover(e){
+    var h=pick(e.clientX,e.clientY,e.pointerType==='touch'?20:11);
+    if(h!==hov){hov=h;showTip()}
+  }
+  window.addEventListener('pointermove',function(e){if(e.pointerType!=='touch')hover(e)},{passive:true});
+  window.addEventListener('pointerdown',function(e){if(e.pointerType==='touch')hover(e)},{passive:true});
+
+  /* ================= frame ================= */
+  var labA=0,tierA=0,headA=0,t0=performance.now();
+  function frame(now){
+    var t=(now-t0)/1000;
+    ctx.clearRect(0,0,W,H);
+
+    /* bokeh: depth only, not data */
+    for(var b=0;b<bokeh.length;b++){var o=bokeh[b];o.x+=o.vx;if(o.x<-.1)o.x=1.1;if(o.x>1.1)o.x=-.1;
+      var by=((o.y*H*1.4-sy*o.d*.22)%(H*1.4)+H*1.4)%(H*1.4)-H*.2,rr=o.r*o.d*2.2;
+      ctx.globalAlpha=o.a*(active?.35:1);ctx.drawImage(o.am?spA:spW,o.x*W-rr,by-rr,rr*2,rr*2)}
+
+    var wide=W>=900,labW=wide?128:30,rightW=wide?150:92;
+    var headH=wide?34:18,gap=wide?16:6,y0=box.y+headH;
+    var avail=Math.max(60,box.w-labW-rightW),x0=box.x+labW,rowP=(box.h-headH)/20;
+    var pitch=(avail-3*gap)/60,blk=15*pitch+gap,gr=Math.min(pitch*.34,2.6,rowP*.22);
+    var cp=Math.min(avail/15,rowP*1.05,26),cr=Math.min(cp,rowP)*.3;
+
+    var am=[];ctx.fillStyle='#d9d8e6';
+    for(var i=0;i<N;i++){
+      var d=dots[i],tx,ty,tr,ta,tam=0,sky=false;
+      if(active&&step<=2){
+        tx=x0+d.cls*blk+(d.col+.5)*pitch;ty=y0+(d.l+.5)*rowP;tr=gr;
+        if(step<2){ta=.55}else{ta=d.ok?1:.2;tam=d.ok?1:0;if(d.ok)tr=gr*1.5}
+      }else if(active&&d.cls===2){
+        tx=x0+(d.k+.5)*cp;ty=y0+(d.l+.5)*rowP;tr=d.ok?cr:cr*.62;ta=d.ok?1:.34;tam=d.ok?1:0;
+      }else{
+        sky=true;var hx=d.hx*W+(still?0:Math.sin(t*.12+d.ph)*6*d.depth);
+        tx=hx;ty=((d.hy*H-sy*d.depth*.28)%H+H)%H;tr=.45+d.depth*.95;
+        ta=(.16+d.depth*.5)*(still?1:(.72+.28*Math.sin(t*1.3+d.ph)));if(active)ta*=.3;
+      }
+      if(!d.init){d.x=tx;d.y=ty;d.r=tr;d.init=true}
+      if(sky&&d.wasSky&&Math.abs(ty-d.pty)>H*.5){d.y+=ty-d.pty}
+      d.wasSky=sky;d.pty=ty;
+      var k=still?1:d.sp*(sky?1.6:1);
+      d.x+=(tx-d.x)*k;d.y+=(ty-d.y)*k;d.r+=(tr-d.r)*k;d.a+=(ta-d.a)*.12;d.am+=(tam-d.am)*.1;
+      if(d.am>.04){am.push(d)}
+      if(d.am<.96){ctx.globalAlpha=d.a*(1-d.am);if(d.r<1.3){ctx.fillRect(d.x-d.r,d.y-d.r,d.r*2,d.r*2)}else{ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,6.283);ctx.fill()}}
+    }
+    for(i=0;i<am.length;i++){d=am[i];var h=d.r*5.5;ctx.globalAlpha=d.a*d.am*.55;ctx.drawImage(spA,d.x-h,d.y-h,h*2,h*2)}
+    ctx.fillStyle='#ffc34d';
+    for(i=0;i<am.length;i++){d=am[i];ctx.globalAlpha=d.a*d.am;ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,6.283);ctx.fill()}
+
+    if(hov>=0){var hd=dots[hov];ctx.globalAlpha=1;ctx.strokeStyle='#f3f1ea';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(hd.x,hd.y,Math.max(hd.r+4,6),0,6.283);ctx.stroke();
+      var tw=tip.offsetWidth,th=tip.offsetHeight,tx2=hd.x+16,ty2=hd.y+16;
+      if(tx2+tw>W-12)tx2=hd.x-16-tw;if(tx2<12)tx2=12;if(ty2+th>H-12)ty2=hd.y-16-th;if(ty2<12)ty2=12;
+      tip.style.transform='translate('+Math.round(tx2)+'px,'+Math.round(ty2)+'px)'}
+
+    /* labels */
+    labA+=((active&&step>=1?1:0)-labA)*.1;tierA+=((active&&step>=3?1:0)-tierA)*.1;
+    var en=lang()==='en';
+    if(labA>.02){
+      ctx.font=(wide?'11px':'9.5px')+' "Geist Mono",ui-monospace,monospace';ctx.textAlign='right';ctx.textBaseline='middle';
+      for(var l=0;l<20;l++){var hi=step>=2&&(S[l][1]+S[l][2]+S[l][3])>0;ctx.globalAlpha=labA*(hi||step<2?.85:.38);ctx.fillStyle=hi?'#f3f1ea':'#85838f';
+        ctx.fillText(wide?(en?L[l][0]:L[l][1]):L[l][2],x0-12,y0+(l+.5)*rowP)}
+    }
+    if(tierA>.02){
+      var tx0=x0+15*cp+(wide?26:14);ctx.textAlign='left';
+      for(var g=0;g<TIER.length;g++){var T=TIER[g],ya=y0+T.from*rowP+3,yb=y0+(T.to+1)*rowP-3,ym=(ya+yb)/2;
+        ctx.globalAlpha=tierA*.5;ctx.strokeStyle=T.c;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(tx0-8,ya);ctx.lineTo(tx0-8,yb);ctx.stroke();
+        ctx.globalAlpha=tierA;ctx.fillStyle=T.c;ctx.font='500 '+(wide?26:17)+'px "Geist",system-ui,sans-serif';ctx.textBaseline=g===0?'middle':'alphabetic';
+        ctx.fillText(T.v[en?1:0],tx0,g===0?ym:ym);
+        if(g>0||wide){ctx.globalAlpha=tierA*.7;ctx.fillStyle='#85838f';ctx.font=(wide?'10.5px':'9px')+' "Geist Mono",ui-monospace,monospace';ctx.textBaseline='alphabetic';
+          if(g===0){ctx.fillText(T.n[en?1:0],tx0+(wide?92:60),ym+4)}else{ctx.fillText(T.n[en?1:0],tx0,ym+(wide?17:14))}}
+      }
+    }
+    headA+=((active&&step>=1&&step<=2?1:0)-headA)*.1;
+    if(headA>.02){
+      ctx.textAlign='center';ctx.textBaseline='alphabetic';
+      for(var c2=0;c2<4;c2++){var cx=x0+c2*blk+7.5*pitch,any=step>=2&&c2>0;
+        ctx.globalAlpha=headA*(step<2||any?.9:.4);ctx.fillStyle=step>=2&&(c2===1||c2===2)?'#ffd58a':'#b5b3c2';
+        ctx.font='500 '+(wide?'11.5px':'10px')+' "Geist Mono",ui-monospace,monospace';ctx.fillText('P'+(c2+1),cx,y0-(wide?20:6));
+        if(wide){ctx.globalAlpha=headA*.6;ctx.fillStyle='#85838f';ctx.font='9.5px "Geist Mono",ui-monospace,monospace';ctx.fillText(HS[c2][en?1:0],cx,y0-8)}}
+    }
+    if(tierA>.02){
+      ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.globalAlpha=tierA*.8;ctx.fillStyle='#ffd58a';
+      ctx.font='500 '+(wide?'11.5px':'10px')+' "Geist Mono",ui-monospace,monospace';
+      ctx.fillText('P3 · '+HS[2][en?1:0]+(en?' · 15 trials per language':' · 15 testes por idioma'),x0,y0-(wide?12:6));
+    }
+    ctx.globalAlpha=1;
+    requestAnimationFrame(frame);
+  }
+
+  /* ================= misc ================= */
+  var btn=document.getElementById('copy'),mail=document.getElementById('email');
+  btn.addEventListener('click',function(){
+    var s=btn.querySelectorAll('span');
+    var done=function(){s[0].textContent='copiado';s[1].textContent='copied';setTimeout(function(){s[0].textContent='copiar';s[1].textContent='copy'},1800)};
+    var sel=function(){var r=document.createRange();r.selectNodeContents(mail);var g=window.getSelection();g.removeAllRanges();g.addRange(r)};
+    try{navigator.clipboard.writeText(mail.textContent).then(done,sel)}catch(e){sel()}
+  });
+  var v=document.getElementById('lumivid');
+  if(v&&'IntersectionObserver' in window){
+    new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()})},{threshold:.2}).observe(v);
+  }
+
+  setLang(start==='en'?'en':'pt',false);
+  resize();onScroll();
+  window.addEventListener('resize',function(){resize();onScroll()});
+  window.addEventListener('scroll',onScroll,{passive:true});
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){placeEyes(true);onScroll()});
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
